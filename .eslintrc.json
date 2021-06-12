@@ -1,7 +1,9 @@
 {
   "env": {
       "browser": true,
-      "es2021": true
+      "es2021": true,
+      "node": true,
+      "jest": true
   },
   "extends": "eslint:recommended",
   "parserOptions": {
@@ -19,16 +21,6 @@
           "__filename",
           "__dirname"
         ]
-      }
-    ],
-    "import/extensions": [
-      "error",
-      "ignorePackages",
-      {
-        "js": "always",
-        "jsx": "always",
-        "ts": "always",
-        "tsx": "always"
       }
     ]
   }
