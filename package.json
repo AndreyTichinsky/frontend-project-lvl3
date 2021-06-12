@@ -20,7 +20,9 @@
   },
   "homepage": "https://github.com/AndreyTichinsky/frontend-project-lvl3#readme",
   "dependencies": {
-    "bootstrap": "^5.0.1"
+    "bootstrap": "^5.0.1",
+    "jquery": "^3.6.0",
+    "popper.js": "^1.16.1"
   },
   "devDependencies": {
     "css-loader": "^5.2.6",
