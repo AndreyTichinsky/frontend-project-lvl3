@@ -4,7 +4,8 @@
   "description": "[![Actions Status](https://github.com/AndreyTichinsky/frontend-project-lvl3/workflows/hexlet-check/badge.svg)](https://github.com/AndreyTichinsky/frontend-project-lvl3/actions)",
   "main": "./src/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "webpack serve --hot --open"
   },
   "repository": {
     "type": "git",
@@ -19,7 +20,7 @@
   "homepage": "https://github.com/AndreyTichinsky/frontend-project-lvl3#readme",
   "dependencies": {
     "@popperjs/core": "^2.9.2",
-    "bootstrap": "^5.0.1",
+    "bootstrap": "^4.6.0",
     "jquery": "^3.6.0",
     "popper.js": "^1.16.1"
   },
