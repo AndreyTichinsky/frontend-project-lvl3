@@ -1,6 +1,21 @@
 import axios from "axios";
 import * as yup from 'yup';
 import parser from "./utils/parser";
+import i18next from 'i18next';
+
+i18next.init({
+  lng: 'ru', // if you're using a language detector, do not define the lng option
+  debug: true,
+  resources: {
+    ru: {
+      translation: {
+        "something_went_wrong": "Что-то пошло не так, попробуйте повторить позже",
+        "rss_already_exist": "RSS уже существует",
+        "invalid_url": "Ссылка должна быть валидным URL"
+      }
+    }
+  }
+});
 
 const App = () => {
   const state = {
@@ -72,7 +87,7 @@ const App = () => {
   const render = (state) => {
     console.log("RENDER!");
     searchInput.classList.toggle("is-invalid", state.error !== null);
-    invalidFeedback.textContent = state.error;
+    invalidFeedback.textContent = i18next.t(state.error);
     feeds.innerHTML = renderFeeds(state.feedInfo);
     posts.innerHTML = renderPosts(state.feedInfo);
   };
@@ -98,15 +113,15 @@ const App = () => {
             render(state);
           }).catch((err) => {
             console.error(err);
-            state.error = "Что-то пошло не так, попробуйте повторить позже";
+            state.error = "invalid_url";
             render(state);
           });
       } else {
         const [ rssExist, invalidUrl ] = results;
         if (!rssExist) {
-          state.error = "RSS уже существует";
+          state.error = "rss_already_exist";
         } else if (!invalidUrl) {
-          state.error = "Ссылка должна быть валидным URL"
+          state.error = "invalid_url"
         }
         render(state);
       }
