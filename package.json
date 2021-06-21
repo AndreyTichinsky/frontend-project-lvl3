@@ -20,9 +20,11 @@
   "homepage": "https://github.com/AndreyTichinsky/frontend-project-lvl3#readme",
   "dependencies": {
     "@popperjs/core": "^2.9.2",
+    "axios": "^0.21.1",
     "bootstrap": "^4.6.0",
     "jquery": "^3.6.0",
-    "popper.js": "^1.16.1"
+    "popper.js": "^1.16.1",
+    "yup": "^0.32.9"
   },
   "devDependencies": {
     "css-loader": "^5.2.6",
