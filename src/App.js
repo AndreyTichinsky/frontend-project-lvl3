@@ -2,6 +2,7 @@ import axios from "axios";
 import * as yup from 'yup';
 import parser from "./utils/parser";
 import i18next from 'i18next';
+import View from "./View"
 
 i18next.init({
   lng: 'ru', // if you're using a language detector, do not define the lng option
@@ -50,40 +51,53 @@ const App = () => {
     </div>`;
   };
   const renderPosts = (feedInfo) => {
+    console.log(feedInfo);
     const listHtml = feedInfo.reduce((acc, cur) => {
-      acc = acc + cur.items.reduce((subAcc, { link, title, description }) => {
-        subAcc = subAcc + `<li
-          class="list-group-item d-flex justify-content-between align-items-start border-0 border-end-0"
-        >
-          <a
-            href="${link}"
-            class="fw-bold"
-            data-id="2"
-            target="_blank"
-            rel="noopener noreferrer"
-            >${title}</a
-          ><button
-            type="button"
-            class="btn btn-outline-primary btn-sm"
-            data-id="2"
-            data-bs-toggle="modal"
-            data-bs-target="#modal"
-          >
-            Просмотр
-          </button>
-        </li>`
-        return subAcc;
+      acc = acc + Object.keys(cur.items).reduce((subAcc, id) => {
+        return subAcc + renderLi(cur.items[id]);
       }, "");
       return acc;
     }, "");
     return `<div class="card border-0">
       <div class="card-body"><h2 class="card-title h4">Посты</h2></div>
-      <ul class="list-group border-0 rounded-0">
+      <ul class="list-group border-0 rounded-0 posts-list">
         ${listHtml}
       </ul>
     </div>`;
   };
 
+  const renderNewPosts = (newPosts) => {
+    console.log(newPosts);
+    const postsList = posts.querySelector('.posts-list');
+    const newPostsHtml = Object.keys(newPosts).sort((a,b)=>b-a).reduce((acc, id) => {
+      return acc + renderLi(newPosts[id]);
+    }, '');
+    postsList.innerHTML = newPostsHtml + postsList.innerHTML;
+  }
+
+  const renderLi = ({link, title}) => {
+    return `<li
+        class="list-group-item d-flex justify-content-between align-items-start border-0 border-end-0"
+      >
+        <a
+          href="${link}"
+          class="fw-bold"
+          data-id="2"
+          target="_blank"
+          rel="noopener noreferrer"
+          >${title}</a
+        ><button
+          type="button"
+          class="btn btn-outline-primary btn-sm"
+          data-id="2"
+          data-bs-toggle="modal"
+          data-bs-target="#modal"
+        >
+          Просмотр
+        </button>
+      </li>`;
+  }
+  
   const render = (state) => {
     console.log("RENDER!");
     searchInput.classList.toggle("is-invalid", state.error !== null);
@@ -105,12 +119,14 @@ const App = () => {
         axios.get(`https://hexlet-allorigins.herokuapp.com/get?url=${encodeURIComponent(value)}`)
           .then((res) => {
             console.log(res);
-            console.log(domParser.parseFromString(res.data.contents, "application/xml"));
             const html = domParser.parseFromString(res.data.contents, "application/xml");
-            state.feedInfo.push(parser(html));
+            console.log(html);
+            const feedObj = parser(html);
+            state.feedInfo.push(feedObj);
             state.feeds.push(value);
             repeatFeedSchema = yup.mixed().notOneOf(state.feeds);
             render(state);
+            View(value, feedObj, renderNewPosts);
           }).catch((err) => {
             console.error(err);
             state.error = "invalid_url";
