@@ -20,6 +20,7 @@ i18next.init({
 
 const App = () => {
   const state = {
+    searchInputValue: "",
     feeds: [],
     feedInfo: [],
     error: null
@@ -104,6 +105,9 @@ const App = () => {
     invalidFeedback.textContent = i18next.t(state.error);
     feeds.innerHTML = renderFeeds(state.feedInfo);
     posts.innerHTML = renderPosts(state.feedInfo);
+    if (state.error === null) {
+      searchInput.value = state.searchInputValue;
+    }
   };
 
   let repeatFeedSchema = yup.mixed().notOneOf(state.feeds);
