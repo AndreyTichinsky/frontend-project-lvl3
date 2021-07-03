@@ -162,7 +162,7 @@ const App = () => {
       correctUrlSchema.isValid(value)
     ]).then((results) => {
       if (results.every(Boolean)) {
-        axios.get(`https://hexlet-allorigins.herokuapp.com/get?url=${encodeURIComponent(value)}`)
+        axios.get(`https://hexlet-allorigins.herokuapp.com/get?disableCache=true&url=${encodeURIComponent(value)}`)
           .then((res) => {
             try {
               const html = domParser.parseFromString(res.data.contents, "application/xml");
