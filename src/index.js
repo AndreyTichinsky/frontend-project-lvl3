@@ -64,18 +64,15 @@ const App = () => {
   });
 
   posts.addEventListener("click", (event) => {
-    console.error(event.path);
-    const liHash = event.path.reduce((acc, node) => {
-      if (acc === null) {
-        const hash = $(node).data("hash");
-        if (hash) {
-          return hash;
-        }
-      }
-      return acc;
-    }, null);
-    state.pressedPosts[liHash] = true;
-    render(state);
+    let target = event.target;
+    while (target.nodeName !== "LI") {
+      target = target.parentElement;
+    }
+    const liHash = $(target).data("hash");
+    if ($(target).data("hash")) {
+      state.pressedPosts[liHash] = true;
+      render(state);
+    }
   });
 
   const renderFeeds = (feedInfo) => {
