@@ -1,7 +1,7 @@
 import axios from "axios";
 import parser from "../utils/parser";
 
-const View = ({ feed, feedObj, renderPosts, state }) => {
+const View = ({ feed, renderPosts, state }) => {
   const domParser = new DOMParser();
   const timer = () => {
     setTimeout(() => {
@@ -12,14 +12,13 @@ const View = ({ feed, feedObj, renderPosts, state }) => {
           console.log(parsedHtml);
           const diffHashArr = [];
           const diff = Object.keys(parsedHtml.items).reduce((acc, hash) => {
-            if (feedObj[hash] === undefined) {
+            if (state.postsMap[hash] === undefined) {
               const item = parsedHtml.items[hash];
               acc[hash] = item;
               diffHashArr.push(item.hash);
             }
             return acc;
           }, {});
-          feedObj = { ...feedObj, ...diff };
           state.postsSequence = state.postsSequence.concat(diffHashArr);
           state.postsMap = {...state.postsMap, ...diff };
           renderPosts(state.postsSequence);

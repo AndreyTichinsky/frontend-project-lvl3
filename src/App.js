@@ -7,14 +7,18 @@ import $ from "jquery";
 import sanitizeHtml from 'sanitize-html';
 
 i18next.init({
-  lng: 'ru', // if you're using a language detector, do not define the lng option
+  lng: 'ru',
   debug: true,
   resources: {
     ru: {
       translation: {
-        "something_went_wrong": "Что-то пошло не так, попробуйте повторить позже",
         "rss_already_exist": "RSS уже существует",
-        "invalid_url": "Ссылка должна быть валидным URL"
+        "invalid_url": "Ссылка должна быть валидным URL",
+        "success_load_rss": "RSS успешно загружен",
+        "empty_request": "Не должно быть пустым",
+        "must_be_valid_rss": "Ресурс не содержит валидный RSS",
+        "check": "Просмотр",
+        "network_error": "Ошибка сети"
       }
     }
   }
@@ -27,7 +31,7 @@ const App = () => {
     feedInfo: [],
     postsSequence: [],
     postsMap: {},
-    error: null,
+    status: null,
     pressedPosts: {}
   };
   const domParser = new DOMParser();
@@ -55,7 +59,7 @@ const App = () => {
     modalData.title.textContent = buttonData.title;
     modalData.body.textContent = buttonData.description;
   });
-  
+
   $(".posts").on("click", (event) => {
     const originalEvent = event.originalEvent;
     const liHash = originalEvent.path.reduce((acc, node) => {
@@ -128,19 +132,21 @@ const App = () => {
           data-modal-description='${sanitizeHtml(description, { allowedTags: []})}'
           data-modal-hash='${hash}'
         >
-          Просмотр
+          ${i18next.t("check")}
         </button>
       </li>`;
   }
   
   const render = (state) => {
-    searchInput.classList.toggle("is-invalid", state.error !== null);
-    invalidFeedback.textContent = i18next.t(state.error);
-    renderFeeds(state.feedInfo);
-    renderPosts(state.postsSequence);
-    if (state.error === null) {
-      searchInput.value = state.searchInputValue;
+    const success = state.status !== null && state.status !== "success_load_rss";
+    searchInput.classList.toggle("is-invalid", success);
+    invalidFeedback.textContent = i18next.t(state.status);
+    invalidFeedback.classList.toggle("text-success", state.status === "success_load_rss");
+    if (state.status !== "must_be_valid_rss") {
+      renderFeeds(state.feedInfo);
+      renderPosts(state.postsSequence);
     }
+    searchInput.value = state.searchInputValue;
   };
 
   let repeatFeedSchema = yup.mixed().notOneOf(state.feeds);
@@ -148,6 +154,7 @@ const App = () => {
   form.addEventListener("submit", (event) => {
     event.preventDefault();
     const value = searchInput.value;
+    state.searchInputValue = value;
     Promise.all([
       repeatFeedSchema.isValid(value),
       correctUrlSchema.isValid(value)
@@ -155,27 +162,37 @@ const App = () => {
       if (results.every(Boolean)) {
         axios.get(`https://hexlet-allorigins.herokuapp.com/get?url=${encodeURIComponent(value)}`)
           .then((res) => {
-            const html = domParser.parseFromString(res.data.contents, "application/xml");
-            const { title, description, items } = parser(html);
-            const arrayOfHashes = Object.keys(items);
-            state.feedInfo.push({ title, description });
-            state.postsSequence = state.postsSequence.concat(arrayOfHashes);
-            state.postsMap = { ...state.postsMap, ...items };
-            state.feeds.push(value);
-            repeatFeedSchema = yup.mixed().notOneOf(state.feeds);
-            render(state);
-            View({ feed: value, feedObj: items, renderPosts, state });
+            try {
+              const html = domParser.parseFromString(res.data.contents, "application/xml");
+              const { title, description, items } = parser(html);
+              const arrayOfHashes = Object.keys(items);
+              state.feedInfo.push({ title, description });
+              state.postsSequence = state.postsSequence.concat(arrayOfHashes);
+              state.postsMap = { ...state.postsMap, ...items };
+              state.feeds.push(value);
+              repeatFeedSchema = yup.mixed().notOneOf(state.feeds);
+              state.searchInputValue = "";
+              state.status = "success_load_rss";
+              render(state);
+              View({ feed: value, renderPosts, state });
+            } catch (err) {
+              console.error(err);
+              state.status = "must_be_valid_rss";
+              render(state);
+            }
           }).catch((err) => {
             console.error(err);
-            state.error = "invalid_url";
+            state.status = "network_error";
+            state.searchInputValue = "";
             render(state);
           });
       } else {
         const [ rssExist, invalidUrl ] = results;
         if (!rssExist) {
-          state.error = "rss_already_exist";
+          state.status = "rss_already_exist";
         } else if (!invalidUrl) {
-          state.error = "invalid_url"
+          state.status = "invalid_url"
+          state.searchInputValue = "";
         }
         render(state);
       }
