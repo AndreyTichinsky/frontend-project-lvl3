@@ -40,11 +40,11 @@ const App = () => {
   const invalidFeedback = document.querySelector(".feedback");
   const feeds = document.querySelector(".feeds");
   const posts = document.querySelector(".posts");
-  const modal = document.querySelector(".modal");
+  // const modal = document.querySelector(".modal");
   const modalData = {
-    link: modal.querySelector(".full-article"),
-    title: modal.querySelector(".modal-title"),
-    body: modal.querySelector(".modal-body"),
+    link: document.querySelector(".full-article"),
+    title: document.querySelector(".modal-title"),
+    body: document.querySelector(".modal-body"),
   };
 
   $('#modal').on('show.bs.modal', function (event) {
