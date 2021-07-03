@@ -1,23 +1,28 @@
 import axios from "axios";
 import parser from "../utils/parser";
 
-const View = (feed, feedObj, renderNewPosts) => {
+const View = ({ feed, feedObj, renderPosts, state }) => {
   const domParser = new DOMParser();
   const timer = () => {
     setTimeout(() => {
       axios.get(`https://hexlet-allorigins.herokuapp.com/get?url=${encodeURIComponent(feed)}`)
         .then((res) => {
           const html = domParser.parseFromString(res.data.contents, "application/xml");
-          console.log(parser(html));
           const parsedHtml = parser(html);
-          const diff = Object.keys(parsedHtml.items).reduce((acc, id) => {
-            if (feedObj.items[id] === undefined) {
-              acc[id] = parsedHtml.items[id];
+          console.log(parsedHtml);
+          const diffHashArr = [];
+          const diff = Object.keys(parsedHtml.items).reduce((acc, hash) => {
+            if (feedObj[hash] === undefined) {
+              const item = parsedHtml.items[hash];
+              acc[hash] = item;
+              diffHashArr.push(item.hash);
             }
             return acc;
           }, {});
-          feedObj.items = { ...feedObj.items, ...diff };
-          renderNewPosts(diff);
+          feedObj = { ...feedObj, ...diff };
+          state.postsSequence = state.postsSequence.concat(diffHashArr);
+          state.postsMap = {...state.postsMap, ...diff };
+          renderPosts(state.postsSequence);
           timer();
         }).catch((err) => {
           console.error(err);
