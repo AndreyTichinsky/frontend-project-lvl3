@@ -169,7 +169,7 @@ const App = () => {
               const { title, description, items } = parser(html);
               const arrayOfHashes = Object.keys(items);
               state.feedInfo.push({ title, description });
-              state.postsSequence = state.postsSequence.concat(arrayOfHashes);
+              state.postsSequence = state.postsSequence.concat(arrayOfHashes.reverse());
               state.postsMap = { ...state.postsMap, ...items };
               state.feeds.push(value);
               repeatFeedSchema = yup.mixed().notOneOf(state.feeds);

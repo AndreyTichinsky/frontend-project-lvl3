@@ -19,7 +19,7 @@ const View = ({ feed, renderPosts, state }) => {
             }
             return acc;
           }, {});
-          state.postsSequence = state.postsSequence.concat(diffHashArr);
+          state.postsSequence = state.postsSequence.concat(diffHashArr.reverse());
           state.postsMap = {...state.postsMap, ...diff };
           renderPosts(state.postsSequence);
           timer();
