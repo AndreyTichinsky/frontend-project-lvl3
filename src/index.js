@@ -156,7 +156,7 @@ const App = () => {
   const correctUrlSchema = yup.string().url();
   form.addEventListener("submit", (event) => {
     event.preventDefault();
-    searchButton.setAttribute("disabled");
+    searchButton.disabled = true;
     const value = searchInput.value;
     state.searchInputValue = value;
     Promise.all([
@@ -189,7 +189,7 @@ const App = () => {
             state.searchInputValue = "";
           }).finally(() => {
             searchInput.removeAttribute("readonly");
-            searchButton.removeAttribute("disabled");
+            searchButton.disabled = false;
             render(state);
           });
       } else {
@@ -200,7 +200,7 @@ const App = () => {
           state.status = "invalid_url"
           state.searchInputValue = "";
         }
-        searchButton.removeAttribute("disabled");
+        searchButton.disabled = false;
         render(state);
       }
     });
