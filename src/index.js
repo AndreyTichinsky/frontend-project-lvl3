@@ -63,9 +63,8 @@ const App = () => {
     modalData.body.textContent = buttonData.description;
   });
 
-  $(".posts").on("click", (event) => {
-    const originalEvent = event.originalEvent;
-    const liHash = originalEvent.path.reduce((acc, node) => {
+  posts.addEventListener("click", (event) => {
+    const liHash = event.path.reduce((acc, node) => {
       if (acc === null) {
         const hash = $(node).data("hash");
         if (hash) {
@@ -113,7 +112,7 @@ const App = () => {
     const sanitizedLink = sanitizeHtml(link);
     return `<li
         data-hash="${hash}"
-        class="list-group-item d-flex justify-content-between align-items-start border-0 border-end-0"
+        class="post list-group-item d-flex justify-content-between align-items-start border-0 border-end-0"
       >
         <a
           href="${sanitizedLink}"
