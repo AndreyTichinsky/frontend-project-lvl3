@@ -38,15 +38,16 @@ const App = () => {
   };
   const domParser = new DOMParser();
   const form = document.querySelector(".rss-form");
-  const searchInput = document.querySelector("#url-input");
+  const searchButton = form.querySelector("button");
+  const searchInput = form.querySelector("#url-input");
   const invalidFeedback = document.querySelector(".feedback");
   const feeds = document.querySelector(".feeds");
   const posts = document.querySelector(".posts");
-  // const modal = document.querySelector(".modal");
+  const modal = document.querySelector(".modal");
   const modalData = {
-    link: document.querySelector(".full-article"),
-    title: document.querySelector(".modal-title"),
-    body: document.querySelector(".modal-body"),
+    link: modal.querySelector(".full-article"),
+    title: modal.querySelector(".modal-title"),
+    body: modal.querySelector(".modal-body"),
   };
 
   $('#modal').on('show.bs.modal', function (event) {
@@ -155,6 +156,7 @@ const App = () => {
   const correctUrlSchema = yup.string().url();
   form.addEventListener("submit", (event) => {
     event.preventDefault();
+    searchButton.setAttribute("disabled");
     const value = searchInput.value;
     state.searchInputValue = value;
     Promise.all([
@@ -187,6 +189,7 @@ const App = () => {
             state.searchInputValue = "";
           }).finally(() => {
             searchInput.removeAttribute("readonly");
+            searchButton.removeAttribute("disabled");
             render(state);
           });
       } else {
@@ -197,6 +200,7 @@ const App = () => {
           state.status = "invalid_url"
           state.searchInputValue = "";
         }
+        searchButton.removeAttribute("disabled");
         render(state);
       }
     });
