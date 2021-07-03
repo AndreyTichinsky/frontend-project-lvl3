@@ -162,6 +162,7 @@ const App = () => {
       correctUrlSchema.isValid(value)
     ]).then((results) => {
       if (results.every(Boolean)) {
+        searchInput.setAttribute("readonly", true);
         axios.get(`https://hexlet-allorigins.herokuapp.com/get?disableCache=true&url=${encodeURIComponent(value)}`)
           .then((res) => {
             try {
@@ -175,17 +176,17 @@ const App = () => {
               repeatFeedSchema = yup.mixed().notOneOf(state.feeds);
               state.searchInputValue = "";
               state.status = "success_load_rss";
-              render(state);
               View({ feed: value, renderPosts, state });
             } catch (err) {
               console.error(err);
               state.status = "must_be_valid_rss";
-              render(state);
             }
           }).catch((err) => {
             console.error(err);
             state.status = "network_error";
             state.searchInputValue = "";
+          }).finally(() => {
+            searchInput.removeAttribute("readonly");
             render(state);
           });
       } else {
