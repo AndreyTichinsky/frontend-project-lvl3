@@ -36,7 +36,7 @@ const App = () => {
   };
   const domParser = new DOMParser();
   const form = document.querySelector(".rss-form");
-  const searchInput = form.querySelector("#url-input");
+  const searchInput = document.querySelector("#url-input");
   const invalidFeedback = document.querySelector(".feedback");
   const feeds = document.querySelector(".feeds");
   const posts = document.querySelector(".posts");
