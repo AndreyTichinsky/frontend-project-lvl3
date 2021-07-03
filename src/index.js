@@ -64,7 +64,7 @@ const App = () => {
   });
 
   posts.addEventListener("click", (event) => {
-    console.log(event.path);
+    console.error(event.path);
     const liHash = event.path.reduce((acc, node) => {
       if (acc === null) {
         const hash = $(node).data("hash");
