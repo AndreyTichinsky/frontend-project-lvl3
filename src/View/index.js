@@ -18,7 +18,6 @@ const View = (props) => {
             'application/xml',
           );
           const parsedHtml = parser(html);
-          console.log(parsedHtml);
           const diffHashArr = [];
           const diff = Object.keys(parsedHtml.items).reduce((acc, hash) => {
             if (state.postsMap[hash] === undefined) {
@@ -35,8 +34,7 @@ const View = (props) => {
           renderPosts(state.postsSequence);
           timer();
         })
-        .catch((err) => {
-          console.error(err);
+        .catch(() => {
           timer();
         });
     }, 5000);

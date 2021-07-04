@@ -95,9 +95,7 @@ const App = () => {
           data-target="#modal"
           data-modal-link='${sanitizedLink}'
           data-modal-title="${sanitizeHtml(title)}"
-          data-modal-description='${sanitizeHtml(description, {
-    allowedTags: [],
-  })}'
+          data-modal-description='${sanitizeHtml(description, { allowedTags: [] })}'
           data-modal-hash='${hash}'
         >
           ${i18next.t('check')}
@@ -106,7 +104,10 @@ const App = () => {
   };
 
   const renderPosts = (postsSequence) => {
-    const listHtml = postsSequence.reduceRight((acc, hash) => acc + renderLi(state.postsMap[hash]), '');
+    const listHtml = postsSequence.reduceRight(
+      (acc, hash) => acc + renderLi(state.postsMap[hash]),
+      '',
+    );
     posts.innerHTML = `<div class="card border-0">
       <div class="card-body"><h2 class="card-title h4">Посты</h2></div>
       <ul class="list-group border-0 rounded-0 posts-list">
@@ -155,16 +156,18 @@ const App = () => {
     }
   });
 
-  let repeatFeedSchema = yup.mixed().notOneOf(state.feeds);
-  const correctUrlSchema = yup.string().url();
+  const schemas = {
+    repeatFeed: yup.mixed().notOneOf(state.feeds),
+    correctUrl: yup.string().url(),
+  };
   form.addEventListener('submit', (event) => {
     event.preventDefault();
     searchButton.disabled = true;
     const { value } = searchInput;
     state.searchInputValue = value;
     Promise.all([
-      repeatFeedSchema.isValid(value),
-      correctUrlSchema.isValid(value),
+      schemas.repeatFeed.isValid(value),
+      schemas.correctUrl.isValid(value),
     ]).then((results) => {
       if (results.every(Boolean)) {
         searchInput.setAttribute('readonly', true);
@@ -188,17 +191,15 @@ const App = () => {
               );
               state.postsMap = { ...state.postsMap, ...items };
               state.feeds.push(value);
-              repeatFeedSchema = yup.mixed().notOneOf(state.feeds);
+              schemas.repeatFeed = yup.mixed().notOneOf(state.feeds);
               state.searchInputValue = '';
               state.status = 'success_load_rss';
               View({ feed: value, renderPosts, state });
             } catch (err) {
-              console.error(err);
               state.status = 'must_be_valid_rss';
             }
           })
-          .catch((err) => {
-            console.error(err);
+          .catch(() => {
             state.status = 'network_error';
             state.searchInputValue = '';
           })
