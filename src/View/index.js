@@ -1,20 +1,21 @@
 import axios from 'axios';
 import parser from '../utils/parser';
 
-const View = ({ feed, renderPosts, state }) => {
+const View = (props) => {
+  const { feed, renderPosts, state } = props;
   const domParser = new DOMParser();
   const timer = () => {
     setTimeout(() => {
       axios
         .get(
           `https://hexlet-allorigins.herokuapp.com/get?url=${encodeURIComponent(
-            feed
-          )}`
+            feed,
+          )}`,
         )
         .then((res) => {
           const html = domParser.parseFromString(
             res.data.contents,
-            'application/xml'
+            'application/xml',
           );
           const parsedHtml = parser(html);
           console.log(parsedHtml);
@@ -28,7 +29,7 @@ const View = ({ feed, renderPosts, state }) => {
             return acc;
           }, {});
           state.postsSequence = state.postsSequence.concat(
-            diffHashArr.reverse()
+            diffHashArr.reverse(),
           );
           state.postsMap = { ...state.postsMap, ...diff };
           renderPosts(state.postsSequence);
