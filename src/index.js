@@ -145,12 +145,16 @@ const App = () => {
   });
 
   posts.addEventListener('click', (event) => {
-    let { target } = event;
-    while (target.nodeName !== 'LI') {
-      target = target.parentElement;
-    }
-    const liHash = $(target).data('hash');
-    if ($(target).data('hash')) {
+    const { target } = event;
+    const getParent = (node) => {
+      if (node.nodeName !== 'LI') {
+        return getParent(node.parentElement);
+      }
+      return node;
+    };
+    const liNode = getParent(target);
+    const liHash = $(liNode).data('hash');
+    if (liHash) {
       state.pressedPosts[liHash] = true;
       render(state);
     }
